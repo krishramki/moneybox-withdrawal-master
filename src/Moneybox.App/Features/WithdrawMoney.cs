@@ -6,8 +6,8 @@ namespace Moneybox.App.Features
 {
     public class WithdrawMoney
     {
-        private IAccountRepository accountRepository;
-        private INotificationService notificationService;
+        private readonly IAccountRepository accountRepository;
+        private readonly INotificationService notificationService;
 
         public WithdrawMoney(IAccountRepository accountRepository, INotificationService notificationService)
         {
@@ -17,7 +17,23 @@ namespace Moneybox.App.Features
 
         public void Execute(Guid fromAccountId, decimal amount)
         {
-            // TODO:
+            var from = accountRepository.GetAccountById(fromAccountId);
+
+            var fromBalance = from.Balance - amount;
+            if (fromBalance < 0m)
+            {
+                throw new InvalidOperationException("Insufficient funds to withdraw");
+            }
+
+            if (fromBalance < 500m)
+            {
+                notificationService.NotifyFundsLow(from.User.Email);
+            }
+
+            from.Balance -= amount;
+            from.Withdrawn -= amount;
+
+            accountRepository.Update(from);
         }
     }
 }
