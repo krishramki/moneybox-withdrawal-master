@@ -19,7 +19,7 @@ namespace Moneybox.App.Features
         {
             var from = accountRepository.GetAccountById(fromAccountId);
 
-            from.Withdraw(amount);
+            from.CalculateWithdraw(amount);
 
             if (from.Balance < 500m)
             {

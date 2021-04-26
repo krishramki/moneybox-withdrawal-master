@@ -16,36 +16,26 @@ namespace Moneybox.App
 
         public decimal PaidIn { get; set; }
 
-        public void Withdraw(decimal amount)
+        public void CalculateWithdraw(decimal amount)
         {
-            var withdrawalBalance = Balance - amount;
+            Balance -= amount;
+            Withdrawn -= amount;
 
-            if (withdrawalBalance < 0)
+            if (Balance < 0)
             {
                 throw new InvalidOperationException("Insufficient funds in the account");
             }
-
-            Balance -= amount;
-            Withdrawn -= amount;
         }
 
-        //public void Withdraw(decimal amount, string reference)
-        //{
-        //    if (CanWithdraw(amount))
-        //    {
-        //        Balance -= amount;
-        //        Transaction = new Transaction(0m, amount,
-        //        reference, DateTime.Now);
-        //    }
-        //    else
-        //    {
-        //        throw new Exception("");
-        //    }
-        //}
-        //public void Deposit(decimal amount, string reference)
-        //{
-        //    Balance += amount;
-        //    Transaction = new Transaction(amount, 0m, reference, DateTime.Now);
-        //}
+        public void CalculatePaidIn(decimal amount)
+        {
+            PaidIn += amount;
+            Balance += amount;
+
+            if (PaidIn > Account.PayInLimit)
+            {
+                throw new InvalidOperationException("Account pay in limit reached");
+            }
+        }
     }
 }
